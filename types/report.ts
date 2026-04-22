@@ -1,4 +1,4 @@
-export interface Item {
+export interface Report {
     id?: number;
     pic: string;            // path relatif seperti 'assets/filename.jpg'
     jalan: string;

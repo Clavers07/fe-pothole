@@ -1,4 +1,4 @@
-export interface Item {
+export interface Label {
     id?: number;
     nama: string;
     desc: number | string; // string saat dari form

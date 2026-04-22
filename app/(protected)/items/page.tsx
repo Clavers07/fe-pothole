@@ -10,7 +10,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import ItemTable from '@/components/Dashboard/ItemTable';
-import ItemForm from '@/components/Dashboard/ItemForm';
+import ItemForm from '@/components/Dashboard/ItemForm-old';
 import { Item } from '@/types/item';
 import { Plus } from 'lucide-react';
 

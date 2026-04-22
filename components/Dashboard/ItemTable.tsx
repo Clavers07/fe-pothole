@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { Item } from '@/types/item';
+// import { Report } from '@/types/report';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
+import { Report } from '@/types/report';
 
-export default function ItemTable({ onEdit }: { onEdit: (item: Item) => void }) {
-    const [items, setItems] = useState<Item[]>([]); // ????
+export default function ReportTable({ onEdit }: { onEdit: (report: Report) => void }) {
+    const [reports, setReports] = useState<Report[]>([]); // ????
 
-    const fetchItems = async () => {
+    const fetchReports = async () => {
         try {
-            const res = await api.get('/items');
-            setItems(res.data);
+            const res = await api.get('/reports');
+            setReports(res.data);
         } catch {
             toast.error('Gagal memuat data');
         }
@@ -22,16 +23,16 @@ export default function ItemTable({ onEdit }: { onEdit: (item: Item) => void }) 
     const handleDelete = async (id: number) => {
         if (!confirm('Yakin hapus?')) return;
         try {
-            await api.delete(`/items/${id}`);
-            toast.success('Item dihapus');
-            fetchItems();
+            await api.delete(`/reports/${id}`);
+            toast.success('Report dihapus');
+            fetchReports();
         } catch {
             toast.error('Gagal menghapus');
         }
     };
 
     useEffect(() => {
-        fetchItems();
+        fetchReports();
     }, []);
 
     return (
@@ -40,28 +41,38 @@ export default function ItemTable({ onEdit }: { onEdit: (item: Item) => void }) 
                 <TableHeader>
                 <TableRow>
                     <TableHead>Gambar</TableHead>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Tahun</TableHead>
+                    <TableHead>Jalan</TableHead>
+                    <TableHead>Latitude</TableHead>
+                    <TableHead>Longitude</TableHead>
+                    <TableHead>Priority</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Label</TableHead>
+                    <TableHead>Desc</TableHead>
                     <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {items.map((item) => (
-                        <TableRow key={item.id}>
+                    {reports.map((report) => (
+                        <TableRow key={report.id}>
                             <TableCell>
                                 <img
-                                src={`http://localhost:8000/${item.pic}`} // sesuaikan base URL
-                                alt={item.nama}
+                                src={`http://localhost:8000/${report.pic}`} // sesuaikan base URL
+                                alt={report.pic}
                                 className="h-12 w-12 object-cover rounded"
                                 />
                             </TableCell>
-                            <TableCell className="font-medium">{item.nama}</TableCell>
-                            <TableCell>{item.tahun}</TableCell>
+                            <TableCell className="font-medium">{report.jalan}</TableCell>
+                            <TableCell>{report.latitude}</TableCell>
+                            <TableCell>{report.longitude}</TableCell>
+                            <TableCell>{report.priority}</TableCell>
+                            <TableCell>{report.status}</TableCell>
+                            <TableCell>{report.label_id}</TableCell>
+                            <TableCell>{report.desc}</TableCell>
                             <TableCell className="text-right space-x-2">
-                                <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
+                                <Button variant="outline" size="sm" onClick={() => onEdit(report)}>
                                 Edit
                                 </Button>
-                                <Button variant="destructive" size="sm" onClick={() => item.id && handleDelete(item.id)}>
+                                <Button variant="destructive" size="sm" onClick={() => report.id && handleDelete(report.id)}>
                                 Hapus
                                 </Button>
                             </TableCell>
