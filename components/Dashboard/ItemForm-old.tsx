@@ -208,7 +208,7 @@ export default function ReportForm({ report, onSuccess, onClose }: ReportFormPro
                         <FormLabel>Nama Jalan</FormLabel>
                         <FormControl>
                             <Input
-                            placeholder="Contoh: Jl. Sudirman"
+                            placeholder="Contoh: Jl. anak anjing"
                             {...field}
                             />
                         </FormControl>
@@ -301,6 +301,34 @@ export default function ReportForm({ report, onSuccess, onClose }: ReportFormPro
                     <FormMessage />
                     </FormItem>
                 )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="label_id"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Jenis Lubang</FormLabel>
+
+                        <FormControl>
+                            <select
+                                {...field}
+                                className="w-full border rounded-md p-2"
+                            >
+                            <option value="">Pilih kategori</option>
+
+                            {labels.map((label) => (
+                                <option key={label.id} value={label.id}>
+                                    {label.name}
+                                </option>
+                            ))}
+
+                            </select>
+                        </FormControl>
+
+                        <FormMessage />
+                        </FormItem>
+                    )}
                 />
 
                 {/* DESKRIPSI */}

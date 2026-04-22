@@ -7,5 +7,6 @@ export interface Report {
     priority: string;
     status: string;
     label_id: number;
+    name: string;
     desc: string;
 }

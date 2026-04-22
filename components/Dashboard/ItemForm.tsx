@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { Label } from '@/types/label';
 
 const formSchema = z.object({
     pic: z
@@ -46,9 +47,7 @@ const formSchema = z.object({
     .enum(["issued", "progress", "solved"]),
 
     label_id: z
-    .number()
-    .int()
-    .positive(),
+    .number(),
 
     desc: z
     .string()
@@ -65,7 +64,21 @@ interface ItemFormProps {
 
 export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
     const [preview, setPreview] = useState<string | null>(null);
+    const [labels, setLabels] = useState<Label[]>([])
     const [loading, setLoading] = useState(false);
+
+    const fetchLabels = async () => {
+        try {
+            const res = await api.get('/labels')
+
+            console.log("LABEL RESPONSE:", res.data)
+
+            setLabels(res.data)
+        } catch (err) {
+            console.error(err)
+            toast.error('Gagal memuat label')
+        }
+    }
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -76,19 +89,21 @@ export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
             longitude: 0,
             priority: 'low',
             status: 'issued',
-            label_id: 1,
+            label_id: undefined,
             desc: ''
         },
     });
 
     // Saat edit -> isis form + tampilkan preview gambar lama
     useEffect(() => {
+        fetchLabels()
+
         if (item) {
             form.reset({
                 pic: undefined, // file baru opsional ??
                 jalan: item.jalan,
-                latitude: item.latitude,
-                longitude: item.longitude,
+                latitude: Number(item.latitude),
+                longitude: Number(item.longitude),
                 priority: item.priority as any,
                 status: item.status as any,
                 label_id: item.label_id ?? undefined,
@@ -131,6 +146,7 @@ export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
         try {
             if (item?.id) {
                 // UPDATE -> POST ke /items/{id} (sesuai route backend kamu)
+                formData.append('_method', 'PUT')
                 await api.post(`/reports/${item.id}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
@@ -162,7 +178,7 @@ export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
                 <FormItem>
                     <FormLabel>Nama Jalan</FormLabel>
                     <FormControl>
-                        <Input placeholder="Contoh: Jl. Sudirman" {...field} />
+                        <Input placeholder="Contoh: Jl. Anak ANjing" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -175,7 +191,8 @@ export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
                     <FormItem>
                         <FormLabel>Latitude</FormLabel>
                         <FormControl>
-                            <Input type="number" step="0.00000001" {...field} />
+                            <Input type="number" step="0.00000001" {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -190,7 +207,10 @@ export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
                     <FormItem>
                         <FormLabel>Longitude</FormLabel>
                         <FormControl>
-                            <Input type="number" step="0.00000001" {...field} />
+                            <Input type="number" step="0.00000001"  {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                            />
+
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -241,6 +261,35 @@ export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
 
             <FormField
                 control={form.control}
+                name="label_id"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Jenis Lubang</FormLabel>
+
+                    <FormControl>
+                        <select
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                            className="w-full border rounded-md p-2"
+                        >
+                        <option value="">Pilih kategori</option>
+
+                        {labels.map((label) => (
+                            <option key={label.id} value={label.id}>
+                                {label.name}
+                            </option>
+                        ))}
+
+                        </select>
+                    </FormControl>
+
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
                 name="desc"
                 render={({ field }) => (
                     <FormItem>
@@ -269,6 +318,7 @@ export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
                 </FormControl>
                 <FormMessage />
             </FormItem>
+            
 
             {/* PREVIEW */}
 

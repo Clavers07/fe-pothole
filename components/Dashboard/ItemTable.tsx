@@ -7,14 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { Report } from '@/types/report';
+import { Label } from '@/types/label';
 
 export default function ReportTable({ onEdit }: { onEdit: (report: Report) => void }) {
     const [reports, setReports] = useState<Report[]>([]); // ????
+    const [labels, setLabels] = useState<Label[]>([])
 
     const fetchReports = async () => {
         try {
             const res = await api.get('/reports');
-            setReports(res.data);
+            // setReports(res.data);
+            
+            const reportsWithLabelName = res.data.map((report: any) => ({
+                ...report,
+                name: report.label?.name || "-"
+            }));
+
+            setReports(reportsWithLabelName);
+            // console.log(res.data);
+            
         } catch {
             toast.error('Gagal memuat data');
         }
@@ -30,9 +41,22 @@ export default function ReportTable({ onEdit }: { onEdit: (report: Report) => vo
             toast.error('Gagal menghapus');
         }
     };
+    const fetchLabels = async () => {
+        try {
+            const res = await api.get('/labels')
+
+            console.log("LABEL RESPONSE:", res.data)
+
+            setLabels(res.data)
+        } catch (err) {
+            console.error(err)
+            toast.error('Gagal memuat label')
+        }
+    }
 
     useEffect(() => {
         fetchReports();
+        fetchLabels();
     }, []);
 
     return (
@@ -66,7 +90,7 @@ export default function ReportTable({ onEdit }: { onEdit: (report: Report) => vo
                             <TableCell>{report.longitude}</TableCell>
                             <TableCell>{report.priority}</TableCell>
                             <TableCell>{report.status}</TableCell>
-                            <TableCell>{report.label_id}</TableCell>
+                            <TableCell>{report.name}</TableCell>
                             <TableCell>{report.desc}</TableCell>
                             <TableCell className="text-right space-x-2">
                                 <Button variant="outline" size="sm" onClick={() => onEdit(report)}>
