@@ -25,7 +25,7 @@ export default function Sidebar() {
 
             <nav className="flex-1">
                 <Button variant="ghost" className="w-full justify-start" asChild>
-                    <a href="/items">Semua Laporan</a>
+                    <a href="/reports">Semua Laporan</a>
                 </Button>
                 <Button variant="ghost" className="w-full justify-start" asChild>
                     <a href="/labels">Semua Label</a>
