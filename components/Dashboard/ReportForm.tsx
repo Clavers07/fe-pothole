@@ -62,7 +62,7 @@ interface ItemFormProps {
     onClose: () => void;        // tutup dialog
 }
 
-export default function ItemForm({ item, onSuccess, onClose }: ItemFormProps) {
+export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) {
     const [preview, setPreview] = useState<string | null>(null);
     const [labels, setLabels] = useState<Label[]>([])
     const [loading, setLoading] = useState(false);

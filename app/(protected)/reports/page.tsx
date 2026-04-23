@@ -9,17 +9,20 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import ItemTable from '@/components/Dashboard/ItemTable';
-import ItemForm from '@/components/Dashboard/ItemForm';
-import { Item } from '@/types/item';
+import ReportTable from '@/components/Dashboard/ReportTable';
+import ReportForm from '@/components/Dashboard/ReportForm';
+
+
+// import { Item } from '@/types/item';
 import { Plus } from 'lucide-react';
+import { Report } from '@/types/report';
 
 export default function ItemsPage() {
     const [open, setOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+    const [selectedItem, setSelectedItem] = useState<Report | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
-    const handleEdit = (item: Item) => {
+    const handleEdit = (item: Report) => {
         setSelectedItem(item);
         setOpen(true);
     ;}
@@ -44,14 +47,14 @@ export default function ItemsPage() {
                 </Button>
             </div>
 
-            <ItemTable onEdit={handleEdit} key={refreshKey} />
+            <ReportTable onEdit={handleEdit} key={refreshKey} />
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>{selectedItem ? 'Edit Item' : 'Tambah Item Baru'}</DialogTitle>
                     </DialogHeader>
-                    <ItemForm
+                    <ReportForm
                         item={selectedItem}
                         onSuccess={handleSuccess}
                         onClose={() => {
