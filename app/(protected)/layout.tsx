@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/auth-store';
 import Sidebar from '@/components/Dashboard/Sidebar';
@@ -11,14 +11,24 @@ export default function ProtectedLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, initializeAuth } = useAuthStore();
     const router = useRouter();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        initializeAuth(); // Memulihkan state dari localStorage
+        setLoading(false);
+    }, [initializeAuth]);
+
+    useEffect(() => {
+        if (!isAuthenticated && !loading) {
             router.replace('/login');
         }
-    }, [!isAuthenticated, router]);
+    }, [isAuthenticated, loading, router]);
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    }
 
     if (!isAuthenticated) return null;
 

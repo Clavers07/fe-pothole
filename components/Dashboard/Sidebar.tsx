@@ -20,12 +20,15 @@ export default function Sidebar() {
         <aside className="w-64 border-r bg-card min-h-screen p-4 flex flex-col">
             <div className='flex items-center justify-start gap-2 mb-8 px-2'>
                 <Package className='h-6 w-6' />
-                <h2 className="text-xl font-semibold">Item Manager</h2>
+                <h2 className="text-xl font-semibold">Reports Manager</h2>
             </div>
 
             <nav className="flex-1">
                 <Button variant="ghost" className="w-full justify-start" asChild>
-                    <a href="/items">Semua Item</a>
+                    <a href="/items">Semua Laporan</a>
+                </Button>
+                <Button variant="ghost" className="w-full justify-start" asChild>
+                    <a href="/labels">Semua Label</a>
                 </Button>
             </nav>
 
