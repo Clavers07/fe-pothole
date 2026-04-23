@@ -37,7 +37,7 @@ export default function LoginForm() {
             const res = await api.post('/login', data);
             login(res.data.access_token);
             toast.success('Login berhasil!');
-            router.push('/items');
+            router.push('/reports');
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Login gagal');
         } finally {
