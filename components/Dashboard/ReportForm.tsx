@@ -44,7 +44,7 @@ const formSchema = z.object({
     .enum(["low", "medium", "high"]),
 
     status: z
-    .enum(["issued", "progress", "solved"]),
+    .enum(["issued", "processed", "finished"]),
 
     label_id: z
     .number(),
@@ -66,6 +66,51 @@ export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) 
     const [preview, setPreview] = useState<string | null>(null);
     const [labels, setLabels] = useState<Label[]>([])
     const [loading, setLoading] = useState(false);
+
+    const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+        toast.error("Browser tidak mendukung geolocation");
+        return;
+    }
+
+    toast.loading("Mengambil lokasi...");
+
+    navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            form.setValue('latitude', lat);
+            form.setValue('longitude', lng);
+
+            try {
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+                );
+
+                const data = await res.json();
+
+                const road =
+                    data.address?.road ||
+                    data.display_name ||
+                    "Lokasi tidak diketahui";
+
+                form.setValue('jalan', road);
+
+            } catch (err) {
+                console.error(err);
+            }
+
+            toast.dismiss();
+            toast.success("Lokasi berhasil diambil");
+        },
+        () => {
+            toast.dismiss();
+            toast.error("Gagal mengambil lokasi");
+        },
+        { timeout: 8000 }
+    );
+};
 
     const fetchLabels = async () => {
         try {
@@ -171,14 +216,15 @@ export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <FormField
+            <div className='max-w-6xl w-full max-h-[70vh] overflow-y-auto'>
+                <FormField
                 control={form.control}
                 name="jalan"
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel>Nama Jalan</FormLabel>
                     <FormControl>
-                        <Input placeholder="Contoh: Jl. Anak ANjing" {...field} />
+                        <Input placeholder="Contoh: Jl. Yos Sudarso" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -217,6 +263,15 @@ export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) 
                 )}
             />
 
+            <Button
+                type="button"
+                variant="outline"
+                onClick={handleGetLocation}
+                className="w-full"
+            >
+                📍 Gunakan Lokasi Saya
+            </Button>
+
             <FormField
                 control={form.control}
                 name="priority"
@@ -228,9 +283,9 @@ export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) 
                                 {...field}
                                 className="w-full border rounded-md p-2"
                             >
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
+                                <option value="low">low</option>
+                                <option value="medium">medium</option>
+                                <option value="high">high</option>
                             </select>
                         </FormControl>
                         <FormMessage />
@@ -249,9 +304,9 @@ export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) 
                                 {...field}
                                 className="w-full border rounded-md p-2"
                             >
-                                <option value="issued">Issued</option>
-                                <option value="progress">Progress</option>
-                                <option value="solved">Solved</option>
+                                <option value="issued">issued</option>
+                                <option value="processed">processed</option>
+                                <option value="finished">finished</option>
                             </select>
                         </FormControl>
                         <FormMessage />
@@ -318,8 +373,6 @@ export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) 
                 </FormControl>
                 <FormMessage />
             </FormItem>
-            
-
             {/* PREVIEW */}
 
             {preview && (
@@ -344,6 +397,9 @@ export default function ReportForm({ item, onSuccess, onClose }: ItemFormProps) 
                         </div>
                 </div>
             )}
+            </div>
+
+            
 
                 {/* ACTION */}
 
